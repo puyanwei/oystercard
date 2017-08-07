@@ -19,4 +19,9 @@ describe Oystercard do
     subject.top_up 90
     expect{ subject.top_up 10 } .to raise_error "Top-up limit of #{subject.limit} reached"
   end
+
+  it 'deducts money when taking journey' do
+    subject.top_up 30
+    expect(subject.deduct 10).to eq 20
+  end
 end
