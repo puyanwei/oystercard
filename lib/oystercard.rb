@@ -1,6 +1,7 @@
 class Oystercard
   DEFAULT_BALANCE = 0
   CARD_LIMIT = 90
+  MINIMUM_BALANCE = 1
 
   attr_reader :balance, :limit
 
@@ -21,6 +22,7 @@ class Oystercard
   end
 
   def touch_in
+    raise 'Insufficient funds' if insufficient_funds?
     @in_use = true
   end
 
@@ -32,7 +34,9 @@ class Oystercard
     @in_use
   end
 
-  private
+  def insufficient_funds?
+    @balance < MINIMUM_BALANCE
+  end
 
   def over_limit?(amount)
     (amount + @balance) > @limit
