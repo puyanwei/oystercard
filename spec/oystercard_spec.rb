@@ -2,6 +2,8 @@ require "oystercard"
 
 describe Oystercard do
 
+  let(:entry) {double("entry")}
+
   describe "#top_up" do
     it "Default balance of zero" do
       new_card = Oystercard.new
@@ -33,25 +35,30 @@ describe Oystercard do
   describe "#in_journey?" do
     it "begins journey when touching in" do
       subject.top_up(10)
-      subject.touch_in
+      subject.touch_in(entry)
       expect(subject).to be_in_journey
     end
 
     it "ends journey when touching out" do
       subject.top_up(10)
-      subject.touch_in
+      subject.touch_in(entry)
       subject.touch_out
       expect(subject).not_to be_in_journey
     end
   end
 
   it "raises error if insufficient funds" do
-    expect { subject.touch_in }.to raise_error "Insufficient funds"
+    expect { subject.touch_in(entry) }.to raise_error "Insufficient funds"
   end
 
   it "touch out deducts minimum fare from balance" do
     subject.top_up(3)
-    subject.touch_in
+    subject.touch_in(entry)
     expect { subject.touch_out }.to change { subject.balance }.by(-1)
+  end
+
+  it "Remembers the entry station after touching in" do
+    subject.top_up(3)
+    expect{ subject.touch_in(entry) }.to change{ subject.journey_history.size }.by(1)
   end
 end
