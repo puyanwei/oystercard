@@ -3,6 +3,8 @@ require "oystercard"
 describe Oystercard do
 
   let(:entry) {double("entry")}
+  let(:exit) {double("exit")}
+
 
   describe "#top_up" do
     it "Default balance of zero" do
@@ -28,7 +30,9 @@ describe Oystercard do
   describe "#deduct" do
     it "deducts money when taking journey" do
       subject.top_up 30
-      expect(subject.touch_out).to eq 29
+      subject.touch_in(entry)
+      subject.touch_out(exit)
+      expect(subject.balance).to eq 29
     end
   end
 
@@ -42,7 +46,7 @@ describe Oystercard do
     it "ends journey when touching out" do
       subject.top_up(10)
       subject.touch_in(entry)
-      subject.touch_out
+      subject.touch_out(exit)
       expect(subject).not_to be_in_journey
     end
   end
@@ -54,11 +58,22 @@ describe Oystercard do
   it "touch out deducts minimum fare from balance" do
     subject.top_up(3)
     subject.touch_in(entry)
-    expect { subject.touch_out }.to change { subject.balance }.by(-1)
+    expect { subject.touch_out(exit) }.to change { subject.balance }.by(-1)
   end
 
-  it "Remembers the entry station after touching in" do
+  it "remembers the entry station after touching in" do
     subject.top_up(3)
     expect{ subject.touch_in(entry) }.to change{ subject.journey_history.size }.by(1)
+  end
+
+  it "journey_history is an empty array by default" do
+    expect(subject.journey_history).to eql([])
+  end
+
+  it "stores journey in journey_history" do
+    subject.top_up(5)
+    subject.touch_in(entry)
+    subject.touch_out(exit)
+    expect(subject.journey_history.size).to eq 1
   end
 end

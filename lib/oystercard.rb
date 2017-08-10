@@ -9,8 +9,7 @@ class Oystercard
     @balance = balance
     @limit = CARD_LIMIT
     @in_use = false
-    @journey_history
-    @entry
+    @journey_history = []
   end
 
   def top_up(amount)
@@ -18,21 +17,22 @@ class Oystercard
     @balance += amount
   end
 
-  def touch_in(entry)
-    @journey_history = entry
+  def touch_in(entry_station)
+    @journey_history << {enter: entry_station, exit: nil}
     raise 'Insufficient funds' if insufficient_funds?
     @in_use = true
-    "Touched in at #{entry}."
+    "Touched in at #{entry_station}."
   end
 
-  def touch_out
+  def touch_out(exit_station)
     @in_use = false
     deduct(MINIMUM_FARE)
-    @journey_history = nil
+    @journey_history.last[:exit] = exit_station
+    "Touched out at #{exit_station}."
   end
 
   def in_journey?
-    @entry.nil?
+    @in_use
   end
 
   def insufficient_funds?
