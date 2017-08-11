@@ -76,4 +76,8 @@ describe Oystercard do
     subject.touch_out(exit)
     expect(subject.journey_history.size).to eq 1
   end
+
+  it "touching in without touching out adds current incomplete journey to the journey history"
+  it "touching in without touching out deducts penalty fare from balance"
+  it "touching in without touching out resets current journey"
 end
