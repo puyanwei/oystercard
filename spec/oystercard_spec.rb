@@ -7,7 +7,7 @@ describe Oystercard do
 
 
   describe "#top_up" do
-    it "Default balance of zero" do
+    it "default balance of zero" do
       new_card = Oystercard.new
       expect(new_card.balance).to eq 0
     end
